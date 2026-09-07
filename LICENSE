@@ -1,6 +1,6 @@
 MIT License
 
-Copyright (c) 2026 imargorsi
+Copyright (c) 2026 AR Gorsi
 
 Permission is hereby granted, free of charge, to any person obtaining a copy
 of this software and associated documentation files (the "Software"), to deal
@@ -23,8 +23,8 @@ SOFTWARE.
 ---
 
 The MIT license above covers the plugin CODE only:
-  manifest.json, Panel.qml, Service.qml, Selection.js, verse-themes.json,
-  and everything under tools/ and docs/.
+  manifest.json, BarWidget.qml, Panel.qml, VerseModel.qml, Selection.js,
+  verse-themes.json, and everything under tools/ and docs/.
 
 The bundled Quran DATA (quran.json, and the quran_en.json it is built from) is
 NOT MIT. It is the Saheeh International English translation, redistributed from

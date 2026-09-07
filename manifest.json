@@ -3,12 +3,12 @@
   "id": "io.github.imargorsi.quran-verse",
   "name": "Quran Verse of the Day",
   "version": "1.0.0",
-  "author": "imargorsi",
+  "author": "AR Gorsi",
   "license": "MIT",
   "description": "A quiet daily Quran verse in the bar. Offline, theme-aware, and contextually selected. English translation: Saheeh International.",
   "kinds": ["bar-widget"],
   "entryPoints": {
-    "barWidget": "Panel.qml"
+    "barWidget": "BarWidget.qml"
   },
   "barWidget": {
     "displayName": "Quran Verse",

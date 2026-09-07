@@ -3,10 +3,9 @@ import Quickshell
 import Quickshell.Io
 import "Selection.js" as Selection
 
-// Headless selection layer: owns the data files, the date, the context
-// detection, the deterministic pick, and the tiny recent-history cache.
-// It holds no layout — Panel.qml reads the normalized result off these
-// properties:
+// The verse model: date, context detection, deterministic pick, the tiny
+// recent-history cache, and local data access. No layout — BarWidget.qml and
+// Panel.qml read the normalized result off these properties:
 //
 //   ready       true once a verse is available
 //   errorText   non-empty when the local data could not be loaded
@@ -14,6 +13,7 @@ import "Selection.js" as Selection
 //   surahName   "Ash-Sharh"
 //   ayah        6
 //   verseText   the English (Saheeh International) translation, verbatim
+//   themeName   the theme the pick came from, e.g. "hardship"
 //
 // Everything is local. There is no network path anywhere in this file.
 Item {
@@ -29,15 +29,24 @@ Item {
 
   readonly property string statePath: Quickshell.env("HOME") + "/.local/state/omarchy/quran-verse.json"
 
-  // Full recomputation is cheap when the day hasn't rolled over (a date
-  // compare and a cache read), so an hourly tick is enough to move the verse
-  // on at local midnight without any of the data being re-parsed.
+  // Recomputation is cheap when the day hasn't rolled over (a date compare and
+  // a cache read), so an hourly tick is enough to move the verse on at local
+  // midnight. Panel.qml also calls recompute() when the popup opens, so a
+  // popup opened just after midnight is never stale.
   Timer {
     interval: 3600000
     repeat: true
     running: true
     onTriggered: root.recompute()
   }
+
+  Component.onCompleted: Qt.callLater(function () {
+    // FileView with a declarative path preloads, but an explicit reload makes
+    // first-run (file absent -> onLoadFailed) fire reliably regardless of
+    // startup ordering.
+    themesFile.reload()
+    stateFile.reload()
+  })
 
   // ---- data files ------------------------------------------------------
   //
@@ -54,11 +63,13 @@ Item {
     watchChanges: false
     printErrors: false
     onLoaded: {
-      try {
-        root._themesData = JSON.parse(text())
-        root._themesReady = true
-      } catch (e) {
-        root._fail()
+      if (!root._themesReady) {
+        try {
+          root._themesData = JSON.parse(text())
+          root._themesReady = true
+        } catch (e) {
+          root._fail()
+        }
       }
       root.recompute()
     }
@@ -73,6 +84,7 @@ Item {
     watchChanges: false
     printErrors: false
     onLoaded: {
+      if (root._quranReady) return   // FileView can fire onLoaded more than once
       try {
         root._quranData = JSON.parse(text())
         root._quranReady = true
@@ -95,7 +107,8 @@ Item {
   //
   // One tiny JSON object: today's chosen verse plus a short list of recent
   // references so the picker can avoid immediate repeats. Missing or
-  // unreadable just means "recompute from scratch" — it is never fatal.
+  // unreadable just means "recompute from scratch" — it is never fatal, and
+  // this file is the plugin's only write.
 
   property var _state: null
   property bool _stateChecked: false
@@ -122,7 +135,12 @@ Item {
   }
 
   function _saveState() {
-    stateFile.setText(JSON.stringify(root._state, null, 2) + "\n")
+    try {
+      stateFile.setText(JSON.stringify(root._state, null, 2) + "\n")
+    } catch (e) {
+      // A write failure (e.g. missing state dir) only costs a recompute
+      // tomorrow — the verse on screen is unaffected.
+    }
   }
 
   // ---- selection -----------------------------------------------------
@@ -149,8 +167,8 @@ Item {
     var today = Selection.isoDate(now)
 
     // Same day, verse already chosen — reuse it. This is what makes opening
-    // the popup repeatedly show the same verse, with no parsing of the
-    // large dataset.
+    // the popup repeatedly show the same verse, with no parsing of the large
+    // dataset.
     if (root._state && root._state.date === today && root._state.text) {
       _apply(root._state.reference, root._state.surah, root._state.ayah,
              root._state.text, root._state.theme)

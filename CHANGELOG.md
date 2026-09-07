@@ -16,6 +16,8 @@ First release.
   the large dataset is parsed at most once a day.
 - Theme-aware: colors and fonts come entirely from the active Omarchy theme.
 - Selection logic isolated in `Selection.js` and unit-tested with node.
+- Structure follows Omarchy's built-in `omarchy.clock`: `BarWidget.qml` entry
+  point → `Panel.qml` popup → `VerseModel.qml` + `Selection.js` logic.
 
-English translation: Saheeh International, via
+Developed by AR Gorsi. English translation: Saheeh International, via
 [risan/quran-json](https://github.com/risan/quran-json), CC-BY-SA 4.0.

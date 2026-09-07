@@ -37,7 +37,7 @@ check("same date + same recent => same reference", a1.reference === a2.reference
 
 // Time of day is a deliberate context signal, so the same date at a
 // different day-part may resolve to a different verse. Open-to-open
-// stability within a day is guaranteed one level up, by Service.qml's
+// stability within a day is guaranteed one level up, by VerseModel.qml's
 // daily cache (the first pick of the day is frozen). Here we only assert
 // that the picker is a pure function of its inputs.
 const a3 = Selection.pickVerse(dayAt(2026, 9, 7, 9), verseThemes, ["1:1", "2:2"]);

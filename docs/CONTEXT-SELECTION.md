@@ -87,14 +87,14 @@ recent list. If every verse in the pool was shown recently, keep the one at
 
 ### 5. Resolve
 
-`Service.qml` looks the `"surah:ayah"` up in `quran.json` for the surah name
+`VerseModel.qml` looks the `"surah:ayah"` up in `quran.json` for the surah name
 and the English text, then writes today's pick and an updated `recent` list
 (newest first, capped at 24) to the state cache.
 
 ## Why the daily cache matters here
 
 Time of day is a selection input, so *in principle* the same date at a
-different hour could resolve differently. In practice `Service.qml` freezes the
+different hour could resolve differently. In practice `VerseModel.qml` freezes the
 first pick of the day in `~/.local/state/omarchy/quran-verse.json` and serves
 that for the rest of the day. So:
 

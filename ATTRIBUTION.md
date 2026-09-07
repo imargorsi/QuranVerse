@@ -25,12 +25,19 @@ translation only. See [`docs/DATA.md`](docs/DATA.md) for the exact transform.
 redistributing that data must keep it under the same license and preserve this
 attribution. The plugin code (everything else) is MIT — see [`LICENSE`](LICENSE).
 
+## Author
+
+Plugin developed by **AR Gorsi** ([@imargorsi](https://github.com/imargorsi)),
+2026. Code licensed MIT.
+
 ## Architectural reference
 
-The plugin's shape — a bar-widget manifest, a headless selection layer, and a
-`KeyboardPanel` popup built from `qs.Ui` primitives — follows the conventions of
-Omarchy's first-party bar panels and of
-[SteveHNH/omarchy-bible-verse-plugin](https://github.com/SteveHNH/omarchy-bible-verse-plugin),
-which prompted the idea. No code was copied from it: that plugin fetches its
-text from a network API at runtime, whereas this one is entirely offline and
-selects verses with local contextual logic.
+The plugin's shape — a `bar-widget` manifest with a `BarWidget.qml` entry point
+that loads `Panel.qml`, plus a headless model — follows Omarchy's built-in
+`omarchy.clock` plugin and the
+[official plugin guide](https://plugins.omarchy.org/develop.html). The idea was
+prompted by
+[SteveHNH/omarchy-bible-verse-plugin](https://github.com/SteveHNH/omarchy-bible-verse-plugin).
+No code was copied from it: that plugin fetches its text from a network API at
+runtime, whereas this one is entirely offline and selects verses with local
+contextual logic.

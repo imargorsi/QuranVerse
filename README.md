@@ -82,12 +82,17 @@ The plugin is a directory of plain files — no build step for the QML.
 | File | Role |
 |------|------|
 | `manifest.json` | Plugin metadata; declares the `bar-widget` and its entry point |
-| `Panel.qml` | Bar icon + popup. All layout, typography, theme colors |
-| `Service.qml` | Headless: date, context, deterministic pick, data + cache I/O |
+| `BarWidget.qml` | Manifest entry point: bar icon, owns the model, loads the panel |
+| `Panel.qml` | The popup — layout, typography, theme colors, nothing else |
+| `VerseModel.qml` | Date, context, deterministic pick, data + cache I/O |
 | `Selection.js` | Pure selection logic (no QML) — unit-tested with node |
 | `verse-themes.json` | Curated theme → verse map, and context → theme map |
 | `quran.json` | The full English translation, keyed `"surah:ayah"` (generated) |
 | `quran_en.json` | Upstream source data; `quran.json` is built from it |
+
+The `BarWidget.qml` + `Panel.qml` + logic-file split follows Omarchy's built-in
+`omarchy.clock` plugin, per the
+[official plugin guide](https://plugins.omarchy.org/develop.html).
 
 Edit any file under `~/.config/omarchy/plugins/` and the shell hot-reloads it.
 A symlink checkout is the convenient loop:
@@ -110,35 +115,38 @@ More detail: [docs/ARCHITECTURE.md](docs/ARCHITECTURE.md),
 
 ```sh
 omarchy plugin validate .          # manifest + entry points + no symlinks
-qmllint -I "$OMARCHY_PATH/shell" Panel.qml Service.qml
+qmllint -I "$OMARCHY_PATH/shell" BarWidget.qml Panel.qml VerseModel.qml
 python3 tools/verify-references.py  # every curated reference exists in quran.json
 node    tools/test-selection.cjs    # determinism, context mapping, integrity
 ```
 
-Then, in the running shell:
+Then, in the running shell (see `qs log -p "$OMARCHY_PATH/shell" --tail 100`
+for QML errors):
 
 | Check | How | Expect |
 |-------|-----|--------|
 | Loads | enable the plugin | book icon appears in the bar |
-| Popup | click the icon | popup opens; `Esc` or click-away closes it |
+| Popup | click the icon / `omarchy-shell shell summon io.github.imargorsi.quran-verse '{}'` | popup opens; `Esc` or click-away closes it |
+| Panel reopen | open, `Esc`, open again | opens every time |
 | Daily consistency | open, close, open | identical verse |
-| Date change | `date -s tomorrow`, reopen (then set it back) | a different verse |
+| Date change | edit `date` in `~/.local/state/omarchy/quran-verse.json`, reopen | a different verse |
 | Offline | disable all networking, reopen | verse still shows |
 | Theme | `omarchy theme next` | popup recolors to match |
-| Long verses | wait for a long one (e.g. a `hardship` day) | wraps, no overflow, scrolls if needed |
-| Performance | `top -p "$(pgrep -f omarchy-shell)"` | no continuous CPU use, no network |
+| Long verses | set the cache `reference` to `2:286`, reopen | wraps, no overflow, scrolls if needed |
+| Performance | `qs log` shows no repeating work; no network in `ss -tp` for the shell PID | quiet |
+| Lifecycle | disable, re-enable, `omarchy-restart-shell` | survives each |
 
 `qmllint` reports `Unexpected token 'void'` on the typed IPC handler functions
 (`function open(): void`). That is a known limitation of the standalone linter —
 Quickshell requires that syntax and the shell runs it fine; `omarchy plugin
-validate` passes.
+validate` passes and the shell loads the plugin without error.
 
 ## Troubleshooting
 
 **The icon doesn't appear.** `omarchy plugin list | grep quran` — if it's not
 listed, run `omarchy-shell shell rescanPlugins`. If listed but disabled,
 `omarchy plugin enable io.github.imargorsi.quran-verse`. Check the shell log
-with `journalctl --user -n 100 | grep -i quran`.
+for QML errors with `qs log -p "$OMARCHY_PATH/shell" --tail 100`.
 
 **The popup says "Unable to load Quran data."** `quran.json` or
 `verse-themes.json` is missing or corrupt in the plugin directory. Reinstall or
@@ -160,7 +168,19 @@ Arabic, audio, tafsir, search, bookmarks, settings UI, notifications, a Hijri
 calendar. The code is structured so those can be added later without a rewrite —
 see [docs/ARCHITECTURE.md](docs/ARCHITECTURE.md#future).
 
+## Credits
+
+Developed by **AR Gorsi** ([@imargorsi](https://github.com/imargorsi)).
+
+English translation by **Saheeh International**, redistributed from
+[risan/quran-json](https://github.com/risan/quran-json) — see
+[ATTRIBUTION.md](ATTRIBUTION.md). Plugin structure follows Omarchy's built-in
+bar panels and was prompted by
+[SteveHNH/omarchy-bible-verse-plugin](https://github.com/SteveHNH/omarchy-bible-verse-plugin)
+(no code shared — that plugin is online, this one is offline).
+
 ## License
 
-Code: **MIT** ([LICENSE](LICENSE)). Bundled Quran data: **CC-BY-SA 4.0**
-([LICENSE-DATA.txt](LICENSE-DATA.txt), [ATTRIBUTION.md](ATTRIBUTION.md)).
+Code: **MIT** © 2026 AR Gorsi ([LICENSE](LICENSE)). Bundled Quran data:
+**CC-BY-SA 4.0** ([LICENSE-DATA.txt](LICENSE-DATA.txt),
+[ATTRIBUTION.md](ATTRIBUTION.md)).

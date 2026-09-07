@@ -2,7 +2,7 @@
 //
 // No network, no randomness, no persisted RNG state: given the same date
 // (and the same "recently shown" list) this returns the same reference every
-// time. Service.qml owns the data files and the recent-history cache; this
+// time. VerseModel.qml owns the data files and the recent-history cache; this
 // file is pure logic so it can be unit-tested with plain node
 // (tools/test-selection.mjs).
 //

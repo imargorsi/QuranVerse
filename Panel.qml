@@ -1,63 +1,74 @@
 import QtQuick
-import Quickshell
-import Quickshell.Io
 import qs.Commons
 import qs.Ui
 
-// Bar icon + popup. All layout, typography, and theme colors live here; the
-// verse itself comes from Service.qml already normalized. The popup is built
-// from the same qs.Ui primitives the first-party bar panels use, so it
-// inherits the active Omarchy theme with no colors of its own.
+// The popup: layout, typography, and theme colors only. The verse comes in
+// already normalized on `model` (a VerseModel owned by BarWidget.qml). Built
+// from the same qs.Ui primitives as the first-party bar panels, so it inherits
+// the active Omarchy theme and has no colors of its own.
 Panel {
   id: root
   moduleName: "io.github.imargorsi.quran-verse"
   ipcTarget: "io.github.imargorsi.quran-verse"
   manageIpc: false
 
-  // Guarded with a palette fallback so the widget still renders if it is
+  // Injected by BarWidget.injectPanel().
+  property var anchorItem: null
+  property var hostWidget: null
+  property var model: null
+  readonly property var barIdentity: hostWidget || root
+
+  // Guarded with a palette fallback so the popup still renders if it is
   // instantiated before the bar injects itself.
   readonly property color foreground: bar ? bar.foreground : Color.foreground
   readonly property color muted: Qt.darker(foreground, 1.5)
   readonly property string fontFamily: bar ? bar.fontFamily : Style.font.family
 
-  implicitWidth: button.implicitWidth
-  implicitHeight: button.implicitHeight
+  readonly property string verseText: model ? model.verseText : ""
+  readonly property string errorText: model ? model.errorText : ""
+  readonly property string reference: model ? model.reference : ""
+  readonly property string surahName: model ? model.surahName : ""
 
-  Service { id: verse }
+  function open() {
+    if (model) model.recompute()   // catch a midnight rollover before showing
+    setCenterHoverRevealSuppressed(false)
+    root.controller.show()
+    Qt.callLater(function () {
+      if (root.opened) setCenterHoverRevealSuppressed(true)
+    })
+  }
+
+  function close() {
+    setCenterHoverRevealSuppressed(false)
+    root.controller.hide()
+  }
+
+  function toggle() {
+    if (root.opened) root.close()
+    else root.open()
+  }
+
+  function switchPanel(direction) {
+    if (root.bar && typeof root.bar.switchPanelFrom === "function")
+      return root.bar.switchPanelFrom(root.barIdentity, direction)
+    return false
+  }
+
+  // Summoning by hotkey moves no pointer, so a hover the bar was still holding
+  // must not keep the center indicators revealed behind the panel.
+  function setCenterHoverRevealSuppressed(value) {
+    if (root.bar && typeof root.bar.setCenterHoverRevealSuppressed === "function")
+      root.bar.setCenterHoverRevealSuppressed(value)
+    else if (root.bar && "centerHoverRevealSuppressed" in root.bar)
+      root.bar.centerHoverRevealSuppressed = value
+  }
 
   onOpenedChanged: if (opened) Qt.callLater(function () { keyCatcher.forceActiveFocus() })
 
-  IpcHandler {
-    target: root.ipcTarget
-    function open(): void { root.open() }
-    function close(): void { root.close() }
-    function show(): void { root.open() }
-    function hide(): void { root.close() }
-    function toggle(): void { root.toggle() }
-    function status(): string {
-      return verse.reference !== "" ? (verse.surahName + " " + verse.reference) : "Quran Verse of the Day"
-    }
-  }
-
-  BarIconButton {
-    id: button
-    anchors.fill: parent
-    bar: root.bar
-    // nf-fa-book (U+F02D) — a closed book; a font glyph, not an image asset.
-    text: ""
-    foreground: verse.errorText !== "" && !verse.ready
-      ? Qt.darker(root.barForeground, 1.2)
-      : root.barForeground
-    tooltipText: verse.reference !== ""
-      ? (verse.surahName + " · " + verse.reference)
-      : "Quran Verse of the Day"
-    onPressed: function (b) { root.toggle() }
-  }
-
   KeyboardPanel {
     id: panel
-    anchorItem: button
-    owner: root
+    anchorItem: root.anchorItem
+    owner: root.barIdentity
     bar: root.bar
     open: root.opened
     focusTarget: keyCatcher
@@ -99,9 +110,9 @@ Panel {
             width: parent.width
             horizontalAlignment: Text.AlignHCenter
             textFormat: Text.PlainText
-            text: verse.errorText !== ""
+            text: root.errorText !== ""
               ? "Unable to load Quran data."
-              : (verse.verseText !== "" ? "“" + verse.verseText + "”" : "")
+              : (root.verseText !== "" ? "“" + root.verseText + "”" : "")
             color: root.foreground
             font.family: root.fontFamily
             font.pixelSize: Style.font.subtitle
@@ -110,11 +121,11 @@ Panel {
           }
 
           Text {
-            visible: verse.errorText === "" && verse.reference !== ""
+            visible: root.errorText === "" && root.reference !== ""
             width: parent.width
             horizontalAlignment: Text.AlignHCenter
             textFormat: Text.PlainText
-            text: verse.surahName + " · " + verse.reference
+            text: root.surahName + " · " + root.reference
             color: root.muted
             font.family: root.fontFamily
             font.pixelSize: Style.font.bodySmall
