@@ -36,7 +36,7 @@ omarchy plugin add https://github.com/imargorsi/QuranVerse.git --enable
 ```
 
 Omarchy warns you that plugins run as unsandboxed code in the shell, shows you
-the URL, and asks you to confirm. It clones the repo into
+the URL, and asks you to confirm. It fetches the repo into
 `~/.config/omarchy/plugins/io.github.imargorsi.quran-verse/` and enables it. The
 icon appears in the right section of the bar; move it with:
 
@@ -44,14 +44,9 @@ icon appears in the right section of the bar; move it with:
 omarchy bar move io.github.imargorsi.quran-verse --section left
 ```
 
-### By hand
-
-```sh
-git clone https://github.com/imargorsi/QuranVerse.git \
-  ~/.config/omarchy/plugins/io.github.imargorsi.quran-verse
-omarchy-shell shell rescanPlugins
-omarchy plugin enable io.github.imargorsi.quran-verse
-```
+`omarchy plugin add` is the supported path — it fetches the repo, validates the
+manifest, and never runs anything from the plugin. Read the source first if you
+like; the whole plugin is `manifest.json` plus four small QML/JS files.
 
 ## Updating
 
@@ -96,13 +91,9 @@ The `BarWidget.qml` + `Panel.qml` + logic-file split follows Omarchy's built-in
 `omarchy.clock` plugin, per the
 [official plugin guide](https://plugins.omarchy.org/develop.html).
 
-Edit any file under `~/.config/omarchy/plugins/` and the shell hot-reloads it.
-A symlink checkout is the convenient loop:
-
-```sh
-ln -s "$PWD" ~/.config/omarchy/plugins/io.github.imargorsi.quran-verse
-omarchy-shell shell rescanPlugins
-```
+Install it with `omarchy plugin add`, then edit the files in place under
+`~/.config/omarchy/plugins/io.github.imargorsi.quran-verse/` — the shell
+hot-reloads on save (`omarchy-shell shell rescanPlugins` forces a reload).
 
 `quran.json` is generated from `quran_en.json` (the risan/quran-json English
 edition, committed unchanged). Regenerate it after a data refresh:
