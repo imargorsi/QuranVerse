@@ -1,0 +1,29 @@
+{
+  "_comment": "Curated theme -> verse-reference map and context -> theme map for the contextual daily-verse selector. References are 'surah:ayah' keys into quran.json. Every reference here is verified by tools/verify-references.py against the bundled dataset. Selection logic lives in Selection.js; the full Quran text lives in quran.json. See docs/CONTEXT-SELECTION.md.",
+
+  "themes": {
+    "hope":        ["39:53", "94:5", "94:6", "93:5", "12:87", "3:139", "41:30", "65:3"],
+    "patience":    ["2:153", "2:155", "3:200", "39:10", "16:127", "2:45", "70:5", "8:46"],
+    "mercy":       ["7:156", "39:53", "6:54", "21:107", "1:3", "17:24"],
+    "forgiveness": ["39:53", "4:110", "3:135", "24:22", "42:40", "110:3"],
+    "guidance":    ["1:6", "2:2", "2:186", "64:11", "47:17", "29:69", "18:10"],
+    "gratitude":   ["14:7", "2:152", "16:18", "31:12", "55:13", "14:34"],
+    "faith":       ["2:285", "49:15", "3:173", "8:2", "2:256", "57:4"],
+    "reflection":  ["3:190", "3:191", "59:21", "47:24", "50:6", "30:8", "21:10"],
+    "trust":       ["3:159", "65:3", "9:51", "14:12", "64:13", "3:160", "25:58"],
+    "hardship":    ["94:5", "94:6", "2:286", "65:7", "2:155", "29:2"],
+    "knowledge":   ["20:114", "39:9", "58:11", "96:1", "96:4", "96:5", "35:28", "2:269"],
+    "good_deeds":  ["99:7", "99:8", "16:97", "2:277", "18:110", "41:33", "2:195", "4:124"],
+    "prayer":      ["2:153", "2:45", "20:14", "29:45", "2:238", "11:114", "17:78", "4:103"]
+  },
+
+  "context": {
+    "morning":     ["guidance", "gratitude", "hope", "knowledge"],
+    "midday":      ["patience", "good_deeds", "knowledge", "trust"],
+    "evening":     ["gratitude", "reflection", "mercy", "hope"],
+    "night":       ["reflection", "forgiveness", "mercy", "trust"],
+    "friday":      ["reflection", "guidance", "mercy", "faith"],
+    "month_start": ["reflection", "guidance", "hope"],
+    "month_end":   ["gratitude", "patience", "reflection"]
+  }
+}

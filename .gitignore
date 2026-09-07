@@ -1,0 +1,10 @@
+# Editor / OS
+*.swp
+*~
+.DS_Store
+
+# Local plugin state written at runtime (never part of the repo)
+quran-verse.json
+
+# node, if anyone adds tooling later
+node_modules/

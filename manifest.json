@@ -1,0 +1,20 @@
+{
+  "schemaVersion": 1,
+  "id": "io.github.imargorsi.quran-verse",
+  "name": "Quran Verse of the Day",
+  "version": "1.0.0",
+  "author": "imargorsi",
+  "license": "MIT",
+  "description": "A quiet daily Quran verse in the bar. Offline, theme-aware, and contextually selected. English translation: Saheeh International.",
+  "kinds": ["bar-widget"],
+  "entryPoints": {
+    "barWidget": "Panel.qml"
+  },
+  "barWidget": {
+    "displayName": "Quran Verse",
+    "description": "Contextual daily Quran verse with a minimal popup",
+    "category": "Info",
+    "allowMultiple": false,
+    "defaultSection": "right"
+  }
+}
