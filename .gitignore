@@ -6,5 +6,8 @@
 # Local plugin state written at runtime (never part of the repo)
 quran-verse.json
 
+# Source art — the committed preview.jpg is the optimized export
+Quran-ayah-verse-of-the-day.jpeg
+
 # node, if anyone adds tooling later
 node_modules/

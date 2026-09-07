@@ -2,11 +2,13 @@
 
 A quiet daily Quran verse in the [Omarchy](https://omarchy.org) bar.
 
-![The popup](preview.png)
+![Quran Verse of the Day](preview.jpg)
 
 A small book icon sits in the bar. Click it and a minimal popup shows one
 verse — English translation, surah name, ayah number. Read it in a few
 seconds and get back to work.
+
+![The popup, on the current theme](screenshot.png)
 
 - **Offline.** The complete English translation is bundled. No network request
   is ever made — the plugin works with WiFi, ethernet, and VPN all off.
