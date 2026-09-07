@@ -8,7 +8,7 @@
 //
 // Flow:  date -> context signals -> candidate themes -> theme -> verse
 //
-// See docs/CONTEXT-SELECTION.md for the reasoning behind the mappings.
+// The theme lists and the context -> theme mapping live in verse-themes.json.
 
 // ---------------------------------------------------------------- date utils
 

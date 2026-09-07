@@ -59,8 +59,8 @@ omarchy plugin enable io.github.imargorsi.quran-verse
 omarchy plugin update io.github.imargorsi.quran-verse
 ```
 
-Omarchy shows the diff, fast-forwards the checkout, and re-validates. A verse
-data refresh (see [docs/DATA.md](docs/DATA.md)) arrives the same way.
+Omarchy shows the diff, fast-forwards the checkout, and re-validates. A refresh
+of the bundled translation arrives the same way.
 
 ## Uninstallation
 
@@ -104,14 +104,26 @@ ln -s "$PWD" ~/.config/omarchy/plugins/io.github.imargorsi.quran-verse
 omarchy-shell shell rescanPlugins
 ```
 
-Regenerate the dataset after changing `quran_en.json`:
+`quran.json` is generated from `quran_en.json` (the risan/quran-json English
+edition, committed unchanged). Regenerate it after a data refresh:
 
 ```sh
-python3 tools/build-quran-json.py
+python3 tools/build-quran-json.py     # normalize quran_en.json -> quran.json
+python3 tools/verify-references.py     # every curated reference still resolves
 ```
 
-More detail: [docs/ARCHITECTURE.md](docs/ARCHITECTURE.md),
-[docs/CONTEXT-SELECTION.md](docs/CONTEXT-SELECTION.md), [docs/DATA.md](docs/DATA.md).
+The translation text is copied verbatim — the build script does no text
+processing. See [ATTRIBUTION.md](ATTRIBUTION.md) for the source and license.
+
+### How a verse is chosen
+
+`Selection.js` is a pure function of the date: local date → FNV-1a hash →
+context signals (day part, Friday, month start/end) → a preferred theme from
+`verse-themes.json` → a verse in that theme, skipping recently shown ones.
+`VerseModel.qml` freezes the first pick of each day in
+`~/.local/state/omarchy/quran-verse.json`, so reopening the popup is stable and
+the 1.2 MB dataset is parsed at most once a day. `node tools/test-selection.cjs`
+covers determinism and the context mapping.
 
 ## Testing
 
@@ -167,8 +179,8 @@ this plugin.
 
 V1 is intentionally small: English only, one verse, minimal popup. Not included:
 Arabic, audio, tafsir, search, bookmarks, settings UI, notifications, a Hijri
-calendar. The code is structured so those can be added later without a rewrite —
-see [docs/ARCHITECTURE.md](docs/ARCHITECTURE.md#future).
+calendar. The four-way split (entry / view / model / logic) is meant to make
+those additions local changes rather than a rewrite.
 
 ## Credits
 

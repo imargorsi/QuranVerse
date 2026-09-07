@@ -15,9 +15,10 @@ is the **English translation by Umm Muhammad (Saheeh International)**.
 
 The translation text is reproduced **verbatim**. It is not edited, paraphrased,
 re-ordered, or mixed with any other translation. Only the surrounding structure
-is changed: the plugin keys each verse by `"surah:ayah"` and drops the Arabic
-text, transliteration, and per-surah metadata, since V1 displays the English
-translation only. See [`docs/DATA.md`](docs/DATA.md) for the exact transform.
+is changed: `tools/build-quran-json.py` keys each verse by `"surah:ayah"` and
+drops the Arabic text, transliteration, and per-surah metadata, since V1
+displays the English translation only. The script does no text processing —
+`tools/verify-references.py` checks the result against the curated references.
 
 ### Share-alike
 

@@ -8,7 +8,7 @@ Output : quran.json      { "<surah>:<ayah>": { "surah": <name>, "ayah": <n>,
 
 Only the English translation and the data the popup shows are kept; the Arabic
 text, transliteration, revelation type and per-surah metadata are dropped
-(V1 is English-only — see README "Data").
+(V1 is English-only).
 
 The translation text is copied verbatim. Do not edit it here.
 """

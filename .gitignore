@@ -9,5 +9,8 @@ quran-verse.json
 # Source art — the committed preview.jpg is the optimized export
 Quran-ayah-verse-of-the-day.jpeg
 
+# Internal design notes — kept local, not part of the published plugin
+docs/
+
 # node, if anyone adds tooling later
 node_modules/
