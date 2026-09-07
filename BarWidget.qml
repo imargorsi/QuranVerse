@@ -79,7 +79,8 @@ BarWidget {
     anchors.fill: parent
     bar: root.bar
     // nf-fa-book (U+F02D) — a closed book. A font glyph, not an image asset.
-    text: ""
+    // Written as an escape so no editor or copy step can strip the PUA char.
+    text: "\uf02d"
     foreground: root.barIconColor
     tooltipText: model.reference !== ""
       ? (model.surahName + " · " + model.reference)
