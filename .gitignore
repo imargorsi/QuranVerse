@@ -14,3 +14,6 @@ docs/
 
 # node, if anyone adds tooling later
 node_modules/
+
+# Marketplace submission draft (not published — see .gitignore)
+.marketplace-submission.md
